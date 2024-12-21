@@ -30,34 +30,39 @@ public class ArbolGUI {
     private DefaultTableModel modeloTabla=new DefaultTableModel();
 
     public ArbolGUI() {
+        cbIzqDer = new JComboBox<>(new String[]{"izquierda1", "izquierda2", "centro", "derecha1", "derecha2"});
 
+        // Acción del botón para agregar un nodo
         btnAgregarNodo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    // Obtener la etiqueta del siguiente nodo
                     String etiqueta = arbol.getEtiquetaNodoSiguiente();
                     Nodo nuevoNodo = new Nodo(0, 0, etiqueta);
-                    String etiquetaPadre = txtRaiz.getText().trim();
-                    boolean esIzquierda = Boolean.parseBoolean(cbIzqDer.getSelectedItem().toString());
 
-                    Nodo nodoPadre= null;
+                    // Obtener el padre y la posición seleccionada
+                    String etiquetaPadre = txtRaiz.getText().trim();
+                    String posicion = (String) cbIzqDer.getSelectedItem();
+
+                    // Buscar el nodo padre en el árbol
+                    Nodo nodoPadre = null;
                     for (Nodo nodo : arbol.getNodos()) {
                         if (nodo.etiqueta.equals(etiquetaPadre)) {
                             nodoPadre = nodo;
                             break;
                         }
                     }
-                    arbol.anadirNodo(nuevoNodo, nodoPadre, esIzquierda);
-                    imprimirArbol();
-                    dibujarArbolEnPanel();
 
+                    // Agregar el nodo al árbol
+                    arbol.anadirNodo(nuevoNodo, nodoPadre, posicion);
+                    textArea.append("Nodo agregado: " + etiqueta + " como " + posicion + " de " + etiquetaPadre + "\n");
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al agregar nodo: " + ex.getMessage());
                 }
             }
         });
-
 
         btnRecorridoAnchura.addActionListener(new ActionListener() {
             @Override
@@ -73,27 +78,27 @@ public class ArbolGUI {
                 textArea.append("Recorrido en Profundidad (DFS): " + resultado + "\n");
             }
         });
-        btnPreorden.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String resultado = arbol.preorden();
-                textArea.append("Preorden: " + resultado + "\n");
-            }
-        });
-        btnInorden.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String resultado = arbol.inorden();
-                textArea.append("Inorden: " + resultado + "\n");
-            }
-        });
-        btnPostorden.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String resultado = arbol.postorden();
-                textArea.append("Postorden: " + resultado + "\n");
-            }
-        });
+//        btnPreorden.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String resultado = arbol.preorden();
+//                textArea.append("Preorden: " + resultado + "\n");
+//            }
+//        });
+//        btnInorden.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String resultado = arbol.inorden();
+//                textArea.append("Inorden: " + resultado + "\n");
+//            }
+//        });
+//        btnPostorden.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String resultado = arbol.postorden();
+//                textArea.append("Postorden: " + resultado + "\n");
+//            }
+//        });
         btnMatrizAdyacencia.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -146,8 +146,11 @@
             </constraints>
             <properties>
               <model>
-                <item value="True"/>
-                <item value="False"/>
+                <item value="izquierda1"/>
+                <item value="izquierda2"/>
+                <item value="centro"/>
+                <item value="derecha1"/>
+                <item value="derecha2"/>
               </model>
             </properties>
           </component>

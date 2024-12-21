@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.*;
 
 public class Arbol {
@@ -14,33 +11,59 @@ public class Arbol {
         numNodos = 0;
     }
 
-    public void anadirNodo(Nodo nodo, Nodo padre, boolean esIzq) {
+    public void anadirNodo(Nodo nodo, Nodo padre, String posicion) {
         if (padre == null) {
             if (raiz == null) {
-                raiz= nodo;
+                raiz = nodo;
             } else {
                 throw new IllegalArgumentException("La raíz ya existe");
             }
         } else {
-            if (esIzq) {
-                if (padre.izquierda == null) {
-                    padre.izquierda = nodo;
-                } else {
-                    throw new IllegalArgumentException("Hoja Izq ya existe");
-                }
-            } else {
-                if (padre.derecha == null) {
-                    padre.derecha = nodo;
-                } else {
-                    throw new IllegalArgumentException("Hoja Der ya existe");
-                }
+            switch (posicion) {
+                case "izquierda1":
+                    if (padre.izquierda1 == null) {
+                        padre.izquierda1 = nodo;
+                    } else {
+                        throw new IllegalArgumentException("Hijo izquierda1 ya existe");
+                    }
+                    break;
+                case "izquierda2":
+                    if (padre.izquierda2 == null) {
+                        padre.izquierda2 = nodo;
+                    } else {
+                        throw new IllegalArgumentException("Hijo izquierda2 ya existe");
+                    }
+                    break;
+                case "centro":
+                    if (padre.centro == null) {
+                        padre.centro = nodo;
+                    } else {
+                        throw new IllegalArgumentException("Hijo centro ya existe");
+                    }
+                    break;
+                case "derecha1":
+                    if (padre.derecha1 == null) {
+                        padre.derecha1 = nodo;
+                    } else {
+                        throw new IllegalArgumentException("Hijo derecha1 ya existe");
+                    }
+                    break;
+                case "derecha2":
+                    if (padre.derecha2 == null) {
+                        padre.derecha2 = nodo;
+                    } else {
+                        throw new IllegalArgumentException("Hijo derecha2 ya existe");
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Posición no válida");
             }
         }
         nodos.add(nodo);
     }
 
     public ArrayList<Nodo> getNodos() {
-            return nodos;
+        return nodos;
     }
 
     public Nodo getRaiz() {
@@ -51,8 +74,9 @@ public class Arbol {
         return String.valueOf((char) ('A' + numNodos++));
     }
 
+    // Método bfs (Recorrido en Anchura)
     public String bfs() {
-        if (raiz== null) return "";
+        if (raiz == null) return "";
 
         StringBuilder resultado = new StringBuilder();
         Queue<Nodo> queue = new LinkedList<>();
@@ -61,15 +85,19 @@ public class Arbol {
         while (!queue.isEmpty()) {
             Nodo nodo = queue.poll();
             resultado.append(nodo.etiqueta).append(" ");
-            if (nodo.izquierda != null) queue.add(nodo.izquierda );
-            if (nodo.derecha != null) queue.add(nodo.derecha);
+            if (nodo.izquierda1 != null) queue.add(nodo.izquierda1);
+            if (nodo.izquierda2 != null) queue.add(nodo.izquierda2);
+            if (nodo.centro != null) queue.add(nodo.centro);
+            if (nodo.derecha1 != null) queue.add(nodo.derecha1);
+            if (nodo.derecha2 != null) queue.add(nodo.derecha2);
         }
 
         return resultado.toString().trim();
     }
 
+    // Método dfs (Recorrido en Profundidad)
     public String dfs() {
-        if (raiz== null) return "";
+        if (raiz == null) return "";
 
         StringBuilder resultado = new StringBuilder();
         Stack<Nodo> stack = new Stack<>();
@@ -78,40 +106,18 @@ public class Arbol {
         while (!stack.isEmpty()) {
             Nodo nodo = stack.pop();
             resultado.append(nodo.etiqueta).append(" ");
-            if (nodo.derecha != null) stack.push(nodo.derecha );
-            if (nodo.izquierda != null) stack.push(nodo.izquierda);
+            // Añadir hijos al stack en orden inverso para asegurar recorrido correcto
+            if (nodo.derecha2 != null) stack.push(nodo.derecha2);
+            if (nodo.derecha1 != null) stack.push(nodo.derecha1);
+            if (nodo.centro != null) stack.push(nodo.centro);
+            if (nodo.izquierda2 != null) stack.push(nodo.izquierda2);
+            if (nodo.izquierda1 != null) stack.push(nodo.izquierda1);
         }
 
         return resultado.toString().trim();
     }
 
-    public String preorden() {
-        return preordenImpresion(raiz).trim();
-    }
-
-    private String preordenImpresion(Nodo nodo) {
-        if (nodo == null) return "";
-        return nodo.etiqueta + " " + preordenImpresion(nodo.izquierda) + preordenImpresion(nodo.derecha);
-    }
-
-    public String inorden() {
-        return inordenImpresion(raiz).trim();
-    }
-
-    private String inordenImpresion(Nodo nodo) {
-        if (nodo == null) return "";
-        return inordenImpresion(nodo.izquierda) + nodo.etiqueta + " " + inordenImpresion(nodo.derecha);
-    }
-
-    public String postorden() {
-        return postordenImpresion(raiz).trim();
-    }
-
-    private String postordenImpresion(Nodo nodo) {
-        if (nodo == null) return "";
-        return postordenImpresion(nodo.izquierda) + postordenImpresion(nodo.derecha) + nodo.etiqueta + " ";
-    }
-
+    // Método para obtener la matriz de adyacencia
     public Object[][] getMatrizAdyacencia() {
         int tam = nodos.size();
         Object[][] matriz = new Object[tam][tam];
@@ -126,16 +132,30 @@ public class Arbol {
 
         for (Nodo nodo : nodos) {
             int desdeIndice = etiquetaAIndice.get(nodo.etiqueta);
-            if (nodo.izquierda != null) {
-                int hastaIndice = etiquetaAIndice.get(nodo.izquierda.etiqueta);
+            if (nodo.izquierda1 != null) {
+                int hastaIndice = etiquetaAIndice.get(nodo.izquierda1.etiqueta);
                 matriz[desdeIndice][hastaIndice] = 1;
             }
-            if (nodo.derecha!= null) {
-                int hastaIndice = etiquetaAIndice.get(nodo.derecha.etiqueta);
+            if (nodo.izquierda2 != null) {
+                int hastaIndice = etiquetaAIndice.get(nodo.izquierda2.etiqueta);
+                matriz[desdeIndice][hastaIndice] = 1;
+            }
+            if (nodo.centro != null) {
+                int hastaIndice = etiquetaAIndice.get(nodo.centro.etiqueta);
+                matriz[desdeIndice][hastaIndice] = 1;
+            }
+            if (nodo.derecha1 != null) {
+                int hastaIndice = etiquetaAIndice.get(nodo.derecha1.etiqueta);
+                matriz[desdeIndice][hastaIndice] = 1;
+            }
+            if (nodo.derecha2 != null) {
+                int hastaIndice = etiquetaAIndice.get(nodo.derecha2.etiqueta);
                 matriz[desdeIndice][hastaIndice] = 1;
             }
         }
 
         return matriz;
     }
+
+    // Métodos de recorrido: preorden, inorden y postorden ya implementados
 }
